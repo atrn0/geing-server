@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/buildWebApplicationWithGolang.iml" filepath="$PROJECT_DIR$/.idea/buildWebApplicationWithGolang.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../questionBoxWithGo/.idea/questionBoxWithGo.iml" filepath="$PROJECT_DIR$/../questionBoxWithGo/.idea/questionBoxWithGo.iml" />
     </modules>
   </component>
 </project>
