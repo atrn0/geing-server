@@ -1,0 +1,80 @@
+---
+swagger: "2.0"
+info:
+  description: "geing"
+  version: "1"
+  title: "geing api server"
+basePath: "/v1"
+schemes:
+- "https"
+paths:
+  /questions:
+    get:
+      summary: "回答された質問一覧を表示"
+      description: "20件ずつ返す．pageを指定しない場合は最初の20件"
+      operationId: "questionsGET"
+      consumes:
+      - "application/json"
+      parameters:
+      - name: "page"
+        in: "query"
+        description: "ページネーション"
+        required: false
+        type: "integer"
+      responses:
+        200:
+          description: "success"
+          schema:
+            $ref: "#/definitions/Questions"
+        400:
+          description: "リクエストの構文が不適切"
+        404:
+          description: "1件もない場合"
+        500:
+          description: "その他のエラー"
+      x-swagger-router-controller: "Default"
+    post:
+      summary: "質問を投稿"
+      operationId: "questionsPOST"
+      consumes:
+      - "applicaiton/json"
+      parameters:
+      - in: "body"
+        name: "question"
+        description: "新しい質問"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateQuestionRequest"
+      responses:
+        201:
+          description: "created a question successfully"
+          schema:
+            $ref: "#/definitions/Question"
+        400:
+          description: "リクエストの構文が不適切"
+        500:
+          description: "その他のエラー"
+      x-swagger-router-controller: "Default"
+definitions:
+  Questions:
+    type: "array"
+    items:
+      $ref: "#/definitions/Question"
+  Question:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+      body:
+        type: "string"
+      created_at:
+        type: "string"
+    example:
+      created_at: "created_at"
+      id: 0.80082819046101150206595775671303272247314453125
+      body: "body"
+  CreateQuestionRequest:
+    type: "object"
+    properties:
+      body:
+        type: "string"
