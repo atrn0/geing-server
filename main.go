@@ -5,10 +5,11 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type AddQuestionsResponse struct {
-	Id        int32  `json:"id"`
+	Id        int    `json:"id"`
 	Body      string `json:"body"`
 	CreatedAt string `json:"created_at"`
 }
@@ -17,19 +18,47 @@ type ErrorResponse struct {
 	Msg string `json:"msg"`
 }
 
-func addQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	var err error
-	var res interface{}
+type QA struct {
+	Id        int    `json:"id"`
+	Question  string `json:"question"`
+	Answer    string `json:"answer"`
+	CreatedAt string `json:"created_at"`
+}
 
-	questionBody := r.FormValue("body")
-	if questionBody == "" {
+// 個別の質問と回答
+func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
+	var err error
+	uid := ps.ByName("uid")
+
+	i, err := strconv.Atoi(uid)
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		_, err := w.Write(errRes("body is required"))
+		i, err = w.Write(errRes("question id is invalid"))
 		handleError(err)
 		return
 	}
 
-	res = AddQuestionsResponse{0, questionBody, "Wed Oct 23 2019 12:56:05 GMT+0900"}
+	res := QA{i, "this is question", "this is answer", "Wed Oct 23 2019 12:56:05 GMT+0900"}
+	b, err := json.Marshal(res)
+	handleError(err)
+
+	i, err = w.Write(b)
+	handleError(err)
+}
+
+// 質問を投稿
+func addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	var err error
+
+	questionBody := r.FormValue("body")
+	if questionBody == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		_, err = w.Write(errRes("body is required"))
+		handleError(err)
+		return
+	}
+
+	res := AddQuestionsResponse{0, questionBody, "Wed Oct 23 2019 12:56:05 GMT+0900"}
 	b, err := json.Marshal(res)
 	handleError(err)
 
@@ -52,7 +81,8 @@ func errRes(msg string) []byte {
 
 func main() {
 	router := httprouter.New()
-	router.POST("/questions", addQuestions)
+	router.GET("/questions/:uid", getQA)
+	router.POST("/questions", addQuestion)
 	err := http.ListenAndServe(":9090", router)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
