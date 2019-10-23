@@ -25,6 +25,40 @@ type QA struct {
 	CreatedAt string `json:"created_at"`
 }
 
+// 質問を20件取得
+func getQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	var err error
+
+	page := r.URL.Query().Get("page")
+	_, err = strconv.Atoi(page)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		_, err = w.Write(errRes("page is invalid"))
+		handleError(err)
+		return
+	}
+
+	res := []QA{
+		{
+			0,
+			"this is question",
+			"this is answer",
+			"Wed Oct 23 2019 12:56:05 GMT+0900",
+		},
+		{
+			1,
+			"this is question",
+			"this is answer",
+			"Wed Oct 23 2019 12:56:05 GMT+0900",
+		},
+	}
+	b, err := json.Marshal(res)
+	handleError(err)
+
+	_, err = w.Write(b)
+	handleError(err)
+}
+
 // 個別の質問と回答
 func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	var err error
@@ -33,7 +67,7 @@ func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	i, err := strconv.Atoi(uid)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		i, err = w.Write(errRes("question id is invalid"))
+		_, err = w.Write(errRes("question id is invalid"))
 		handleError(err)
 		return
 	}
@@ -67,6 +101,17 @@ func addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	handleError(err)
 }
 
+func main() {
+	router := httprouter.New()
+	router.GET("/questions", getQuestions)
+	router.GET("/questions/:uid", getQA)
+	router.POST("/questions", addQuestion)
+	err := http.ListenAndServe(":9090", router)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
+}
+
 func handleError(err error) {
 	if err != nil {
 		log.Fatal(err)
@@ -77,14 +122,4 @@ func errRes(msg string) []byte {
 	b, err := json.Marshal(ErrorResponse{msg})
 	handleError(err)
 	return b
-}
-
-func main() {
-	router := httprouter.New()
-	router.GET("/questions/:uid", getQA)
-	router.POST("/questions", addQuestion)
-	err := http.ListenAndServe(":9090", router)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
 }
