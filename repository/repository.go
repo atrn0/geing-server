@@ -21,6 +21,7 @@ func init() {
 	HandleError(err)
 }
 
+// 質問を追加
 func CreateQuestion(body string) error {
 	fmt.Println(body)
 	tx := db.MustBegin()
@@ -28,9 +29,11 @@ func CreateQuestion(body string) error {
 	return tx.Commit()
 }
 
-func GetQA(id string) (QA, error) {
-	fmt.Println("get question: ", id)
+// 質問回答セットを1件取得
+func GetQA(id int) (QA, error) {
 	qa := QA{}
 	err := db.Get(&qa, "SELECT * FROM qandas WHERE id = ?", id)
 	return qa, err
 }
+
+//func GetQuestions(page)

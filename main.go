@@ -48,10 +48,10 @@ func getQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 // 個別の質問と回答
 func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	var err error
-	uid := ps.ByName("uid")
+	uidStr := ps.ByName("uid")
 
 	// 数字かどうか
-	_, err = strconv.Atoi(uid)
+	uid, err := strconv.Atoi(uidStr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_, err = w.Write(ErrRes("question id is invalid"))
@@ -66,6 +66,8 @@ func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 		HandleError(err)
 		return
 	}
+
+	// TODO: 回答がまだなかったら404
 
 	b, err := json.Marshal(res)
 	if err != nil {
