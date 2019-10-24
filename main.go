@@ -15,8 +15,13 @@ import (
 func getQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var err error
 
-	page := r.URL.Query().Get("page")
-	_, err = strconv.Atoi(page)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	pageStr := r.URL.Query().Get("page")
+	if pageStr == "" {
+		pageStr = "0"
+	}
+	page, err := strconv.Atoi(pageStr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_, err = w.Write(ErrRes("page is invalid"))
@@ -24,30 +29,46 @@ func getQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	res := []GetQAsResponse{
-		{
-			0,
-			"this is question",
-			"this is answer",
-			"Wed Oct 23 2019 12:56:05 GMT+0900",
-		},
-		{
-			1,
-			"this is question",
-			"this is answer",
-			"Wed Oct 23 2019 12:56:05 GMT+0900",
-		},
+	res, err := repository.GetQuestions(page)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
 	}
+
+	if res == nil {
+		w.WriteHeader(http.StatusNotFound)
+		_, err = w.Write(ErrRes("questions not found"))
+		HandleError(err)
+		return
+	}
+
 	b, err := json.Marshal(res)
 	HandleError(err)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
+	}
 
 	_, err = w.Write(b)
 	HandleError(err)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
+	}
 }
 
 // 個別の質問と回答
 func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	var err error
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	uidStr := ps.ByName("uid")
 
 	// 数字かどうか
@@ -91,6 +112,8 @@ func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 func addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var err error
 
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
 	questionBody := r.FormValue("body")
 	if questionBody == "" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -106,6 +129,7 @@ func addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
+	// TODO: 実際の値を返す
 	res := AddQuestionsResponse{0, questionBody, "Wed Oct 23 2019 12:56:05 GMT+0900"}
 	b, err := json.Marshal(res)
 	if err != nil {

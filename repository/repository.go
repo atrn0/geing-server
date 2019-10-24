@@ -36,4 +36,8 @@ func GetQA(id int) (QA, error) {
 	return qa, err
 }
 
-//func GetQuestions(page)
+func GetQuestions(page int) ([]GetQAsResponse, error) {
+	var questions []GetQAsResponse
+	err := db.Select(&questions, "SELECT id, question, created_at FROM qandas WHERE id > ? * 10 LIMIT 20", page)
+	return questions, err
+}

@@ -7,10 +7,9 @@ type AddQuestionsResponse struct {
 }
 
 type GetQAsResponse struct {
-	Id        int    `json:"id"`
-	Question  string `json:"question"`
-	Answer    string `json:"answer"`
-	CreatedAt string `json:"created_at"`
+	Id        int    `db:"id"`
+	Question  string `db:"question"`
+	CreatedAt string `db:"created_at"`
 }
 
 type QA struct {
