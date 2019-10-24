@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	. "questionBoxWithGo/models"
+	"questionBoxWithGo/repository"
 	. "questionBoxWithGo/utils"
 	"strconv"
 )
@@ -77,9 +78,12 @@ func addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	//if repository.CreateQuestion(questionBody) != nil {
-	//	w.WriteHeader(http.)
-	//}
+	if repository.CreateQuestion(questionBody) != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes("database error"))
+		HandleError(err)
+		return
+	}
 
 	res := AddQuestionsResponse{0, questionBody, "Wed Oct 23 2019 12:56:05 GMT+0900"}
 	b, err := json.Marshal(res)
