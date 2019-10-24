@@ -50,7 +50,8 @@ func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 	var err error
 	uid := ps.ByName("uid")
 
-	i, err := strconv.Atoi(uid)
+	// 数字かどうか
+	_, err = strconv.Atoi(uid)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		_, err = w.Write(ErrRes("question id is invalid"))
@@ -58,12 +59,30 @@ func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	res := GetQAsResponse{i, "this is question", "this is answer", "Wed Oct 23 2019 12:56:05 GMT+0900"}
-	b, err := json.Marshal(res)
-	HandleError(err)
+	res, err := repository.GetQA(uid)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
+	}
 
-	i, err = w.Write(b)
-	HandleError(err)
+	b, err := json.Marshal(res)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	_, err = w.Write(b)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
+	}
 }
 
 // 質問を投稿
@@ -87,11 +106,22 @@ func addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 	res := AddQuestionsResponse{0, questionBody, "Wed Oct 23 2019 12:56:05 GMT+0900"}
 	b, err := json.Marshal(res)
-	HandleError(err)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
+	}
 
 	w.WriteHeader(http.StatusCreated)
 	_, err = w.Write(b)
-	HandleError(err)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err = w.Write(ErrRes(err.Error()))
+		HandleError(err)
+		return
+	}
+
 }
 
 func main() {

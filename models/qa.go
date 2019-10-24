@@ -14,9 +14,9 @@ type GetQAsResponse struct {
 }
 
 type QA struct {
-	Id        int    `db:"id"`
-	Question  string `db:"question"`
-	Answered  bool   `db:"answered"`
-	Answer    string `db:"answer"`
-	CreatedAt string `db:"created_at"`
+	Id        int     `db:"id"`
+	Question  string  `db:"question"`
+	Answered  bool    `db:"answered"`
+	Answer    *string `db:"answer"`
+	CreatedAt string  `db:"created_at"`
 }

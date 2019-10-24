@@ -4,6 +4,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	. "questionBoxWithGo/models"
 	. "questionBoxWithGo/utils"
 )
 
@@ -25,4 +26,11 @@ func CreateQuestion(body string) error {
 	tx := db.MustBegin()
 	tx.MustExec("INSERT INTO qandas (question) VALUES (?)", body)
 	return tx.Commit()
+}
+
+func GetQA(id string) (QA, error) {
+	fmt.Println("get question: ", id)
+	qa := QA{}
+	err := db.Get(&qa, "SELECT * FROM qandas WHERE id = ?", id)
+	return qa, err
 }
