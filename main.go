@@ -23,6 +23,7 @@ func getQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
+		// TODO: エラー処理を抽象化
 		w.WriteHeader(http.StatusBadRequest)
 		_, err = w.Write(ErrRes("page is invalid"))
 		HandleError(err)
