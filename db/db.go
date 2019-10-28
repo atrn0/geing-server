@@ -32,7 +32,7 @@ func NewDB() (*Conn, error) {
 		"aratasato:hoge@tcp(127.0.0.1:3306)/geing",
 	)
 
-	return &Conn{db}, err
+	return &Conn{db}, errors.WithMessage(err, "failed: connect db")
 }
 
 // 質問を追加

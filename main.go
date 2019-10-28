@@ -1,23 +1,29 @@
 package main
 
 import (
-	"encoding/json"
-	"github.com/julienschmidt/httprouter"
+	"fmt"
 	"log"
-	"net/http"
 	"questionBoxWithGo/db"
-	. "questionBoxWithGo/models"
-	. "questionBoxWithGo/utils"
-	"strconv"
+	"questionBoxWithGo/http"
 )
 
 func main() {
-	router := httprouter.New()
-	router.GET("/questions", getQuestions)
-	router.GET("/questions/:uid", getQA)
-	router.POST("/questions", addQuestion)
-	err := http.ListenAndServe(":9090", router)
+	var port = "9090"
+
+	fmt.Println("Starting geing server...")
+
+	// init conn
+	conn, err := db.NewDB()
 	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
+		log.Fatalln(err.Error())
+	}
+	fmt.Println("init db")
+
+	// init and start server
+	server := http.NewServer(conn)
+	fmt.Println("init server")
+	err = server.Start(port)
+	if err != nil {
+		log.Fatalln(err)
 	}
 }

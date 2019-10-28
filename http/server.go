@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	"questionBoxWithGo/db"
@@ -23,7 +24,8 @@ func (s *Server) Routes() *httprouter.Router {
 	return router
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start(port string) error {
 	router := s.Routes()
-	return http.ListenAndServe(":9090", router)
+	fmt.Println("Listening on " + port)
+	return http.ListenAndServe(":"+port, router)
 }
