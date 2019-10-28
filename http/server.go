@@ -2,18 +2,28 @@ package http
 
 import (
 	"github.com/julienschmidt/httprouter"
-	"log"
 	"net/http"
+	"questionBoxWithGo/db"
 )
 
-type Server struct{}
+type Server struct {
+	db *db.Conn
+}
+
+func NewServer(db *db.Conn) *Server {
+	return &Server{db}
+}
 
 func (s *Server) Routes() *httprouter.Router {
 	router := httprouter.New()
 	router.GET("/questions", s.getQuestions)
 	router.GET("/questions/:uid", s.getQA)
 	router.POST("/questions", s.addQuestion)
-	log.Fatalln(http.ListenAndServe(":9090", router))
 
 	return router
+}
+
+func (s *Server) Start() error {
+	router := s.Routes()
+	return http.ListenAndServe(":9090", router)
 }

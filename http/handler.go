@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"questionBoxWithGo/db"
 	"strconv"
 )
 
@@ -16,7 +15,7 @@ type AddQuestionsResponse struct {
 	QuestionBody string `json:"question_body"`
 }
 
-// TODO: Serverがdbを持つ
+// TODO: headerを共通化
 
 // 質問を20件取得
 func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -38,7 +37,7 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 		return
 	}
 
-	questions, err := db.GetQuestions(page)
+	questions, err := s.db.GetQuestions(page)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		res, _ = json.Marshal(ErrorResponse{"internal server error"})
@@ -88,7 +87,7 @@ func (s *Server) getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Par
 		return
 	}
 
-	qa, err := db.GetQA(uid)
+	qa, err := s.db.GetQA(uid)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		res, _ = json.Marshal(ErrorResponse{"internal server error"})
@@ -117,7 +116,7 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 		return
 	}
 
-	if db.CreateQuestion(questionBody) != nil {
+	if s.db.CreateQuestion(questionBody) != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		res, _ = json.Marshal(ErrorResponse{"internal server error"})
 		_, _ = w.Write(res)
