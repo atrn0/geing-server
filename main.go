@@ -5,8 +5,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"log"
 	"net/http"
+	"questionBoxWithGo/db"
 	. "questionBoxWithGo/models"
-	"questionBoxWithGo/repository"
 	. "questionBoxWithGo/utils"
 	"strconv"
 )
@@ -30,7 +30,7 @@ func getQuestions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	res, err := repository.GetQuestions(page)
+	res, err := db.GetQuestions(page)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err = w.Write(ErrRes(err.Error()))
@@ -81,7 +81,7 @@ func getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
 		return
 	}
 
-	res, err := repository.GetQA(uid)
+	res, err := db.GetQA(uid)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		_, err = w.Write(ErrRes(err.Error()))
@@ -123,7 +123,7 @@ func addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		return
 	}
 
-	if repository.CreateQuestion(questionBody) != nil {
+	if db.CreateQuestion(questionBody) != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, err = w.Write(ErrRes("database error"))
 		HandleError(err)
