@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/aratasato/geing-server/db"
+	"github.com/aratasato/geing-server/http"
 	"log"
-	"questionBoxWithGo/db"
-	"questionBoxWithGo/http"
 )
 
 func main() {

@@ -1,9 +1,9 @@
 package http
 
 import (
+	"github.com/aratasato/geing-server/db"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
-	"questionBoxWithGo/db"
 )
 
 type Server struct {

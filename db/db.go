@@ -35,7 +35,7 @@ func NewDB() (*Conn, error) {
 		"aratasato:hoge@tcp(127.0.0.1:3306)/geing",
 	)
 
-	return &Conn{db}, errors.WithMessage(err, "failed to connect db")
+	return &Conn{db}, errors.Wrap(err, "failed to connect db")
 }
 
 // 質問を追加
@@ -43,11 +43,11 @@ func (db *Conn) SaveQuestion(body string) error {
 	fmt.Println("Save question: " + body)
 	tx, err := db.conn.Beginx()
 	if err != nil {
-		return errors.WithMessage(err, "failed to connect db")
+		return errors.Wrap(err, "failed to connect db")
 	}
 	tx.MustExec("INSERT INTO qandas (question) VALUES (?)", body)
 	err = tx.Commit()
-	return errors.WithMessage(err, "failed to add question")
+	return errors.Wrap(err, "failed to add question")
 }
 
 // 質問回答セットを1件取得
@@ -57,12 +57,12 @@ func (db *Conn) GetQA(id int) (QAndA, error) {
 	if err == sql.ErrNoRows {
 		return QAndA{}, ErrContentNotFound
 	}
-	return qa, errors.WithMessage(err, "failed to get qa")
+	return qa, errors.Wrap(err, "failed to get qa")
 }
 
 // 質問を20件取得
 func (db *Conn) GetQuestions(page int) ([]Questions, error) {
 	var questions []Questions
 	err := db.conn.Select(&questions, "SELECT id, question, created_at FROM qandas WHERE id > ? * 10 LIMIT 20", page)
-	return questions, errors.WithMessage(err, "failed to get question")
+	return questions, errors.Wrap(err, "failed to get question")
 }
