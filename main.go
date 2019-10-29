@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-	var port = "9090"
 
 	fmt.Println("Starting geing server...")
 
@@ -22,7 +21,7 @@ func main() {
 	// init and start server
 	server := http.NewServer(conn)
 	fmt.Println("init server")
-	err = server.Start(port)
+	err = server.Start()
 	if err != nil {
 		log.Fatalln(err)
 	}

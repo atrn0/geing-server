@@ -2,8 +2,10 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"questionBoxWithGo/db"
 	"strconv"
 )
 
@@ -22,6 +24,8 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 	var err error
 	var res []byte
 
+	fmt.Println(r.Method, r.URL)
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	pageStr := r.URL.Query().Get("page")
@@ -31,48 +35,46 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 	}
 	page, err := strconv.Atoi(pageStr)
 	if err != nil {
+		fmt.Println(err)
+		msg := "page is invalid"
 		w.WriteHeader(http.StatusBadRequest)
-		res, _ = json.Marshal(ErrorResponse{"page is invalid"})
+		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
 		return
 	}
 
 	questions, err := s.db.GetQuestions(page)
 	if err != nil {
+		fmt.Println(err)
+		msg := "internal server error"
 		w.WriteHeader(http.StatusInternalServerError)
-		res, _ = json.Marshal(ErrorResponse{"internal server error"})
+		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
 		return
 	}
 
 	if questions == nil {
+		msg := "questions not found"
 		w.WriteHeader(http.StatusNotFound)
-		res, _ = json.Marshal(ErrorResponse{"questions not found"})
+		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
 		return
 	}
 
-	res, err = json.Marshal(questions)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		res, _ = json.Marshal(ErrorResponse{"internal server error"})
-		_, _ = w.Write(res)
-		return
-	}
-
-	_, err = w.Write(res)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		res, _ = json.Marshal(ErrorResponse{"internal server error"})
-		_, _ = w.Write(res)
-		return
-	}
+	res, _ = json.Marshal(questions)
+	_, _ = w.Write(res)
+	fmt.Println("res: ", string(res))
 }
 
 // 個別の質問と回答
-func (s *Server) getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Params) {
+func (s *Server) getQA(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var res []byte
 	var err error
+
+	fmt.Println(r.Method, r.URL)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -81,45 +83,68 @@ func (s *Server) getQA(w http.ResponseWriter, _ *http.Request, ps httprouter.Par
 	// 数字かどうか
 	uid, err := strconv.Atoi(uidStr)
 	if err != nil {
+		fmt.Println(err)
+		msg := "question id should be integer"
 		w.WriteHeader(http.StatusBadRequest)
-		res, _ = json.Marshal(ErrorResponse{"question id should be integer"})
+		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
 		return
 	}
 
 	qa, err := s.db.GetQA(uid)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		res, _ = json.Marshal(ErrorResponse{"internal server error"})
+
+	if err == db.ErrContentNotFound {
+		w.WriteHeader(http.StatusNotFound)
+		res, _ = json.Marshal(ErrorResponse{"question not found"})
 		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
 		return
 	}
 
-	// TODO: そのidのqaがなかったとき404
+	if err != nil {
+		fmt.Println(err)
+		msg := "internal server error"
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	res, _ = json.Marshal(qa)
 	_, _ = w.Write(res)
+	fmt.Println("res: ", string(res))
 }
 
 // 質問を投稿
 func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var res []byte
+	var err error
+
+	fmt.Println(r.Method, r.URL)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	questionBody := r.FormValue("body")
 	if questionBody == "" {
+		msg := "question is required"
 		w.WriteHeader(http.StatusBadRequest)
-		res, _ = json.Marshal(ErrorResponse{"question is required"})
+		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
 		return
 	}
 
-	if s.db.CreateQuestion(questionBody) != nil {
+	err = s.db.SaveQuestion(questionBody)
+	if err != nil {
+		fmt.Println(err)
+		msg := "internal server error"
 		w.WriteHeader(http.StatusInternalServerError)
-		res, _ = json.Marshal(ErrorResponse{"internal server error"})
+		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
 		return
 	}
 
@@ -128,4 +153,5 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
+	fmt.Println("res: ", string(res))
 }

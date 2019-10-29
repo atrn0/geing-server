@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -25,6 +26,8 @@ type Conn struct {
 	conn *sqlx.DB
 }
 
+var ErrContentNotFound = errors.New("not found")
+
 func NewDB() (*Conn, error) {
 	var err error
 	db, err := sqlx.Open(
@@ -32,27 +35,34 @@ func NewDB() (*Conn, error) {
 		"aratasato:hoge@tcp(127.0.0.1:3306)/geing",
 	)
 
-	return &Conn{db}, errors.WithMessage(err, "failed: connect db")
+	return &Conn{db}, errors.WithMessage(err, "failed to connect db")
 }
 
 // 質問を追加
-func (db *Conn) CreateQuestion(body string) error {
-	fmt.Println(body)
-	tx := db.conn.MustBegin()
+func (db *Conn) SaveQuestion(body string) error {
+	fmt.Println("Save question: " + body)
+	tx, err := db.conn.Beginx()
+	if err != nil {
+		return errors.WithMessage(err, "failed to connect db")
+	}
 	tx.MustExec("INSERT INTO qandas (question) VALUES (?)", body)
-	err := tx.Commit()
-	return errors.WithMessage(err, "failed: add question")
+	err = tx.Commit()
+	return errors.WithMessage(err, "failed to add question")
 }
 
 // 質問回答セットを1件取得
 func (db *Conn) GetQA(id int) (QAndA, error) {
 	qa := QAndA{}
 	err := db.conn.Get(&qa, "SELECT * FROM qandas WHERE id = ?", id)
-	return qa, errors.WithMessage(err, "failed: get qa")
+	if err == sql.ErrNoRows {
+		return QAndA{}, ErrContentNotFound
+	}
+	return qa, errors.WithMessage(err, "failed to get qa")
 }
 
+// 質問を20件取得
 func (db *Conn) GetQuestions(page int) ([]Questions, error) {
 	var questions []Questions
 	err := db.conn.Select(&questions, "SELECT id, question, created_at FROM qandas WHERE id > ? * 10 LIMIT 20", page)
-	return questions, errors.WithMessage(err, "failed: get question")
+	return questions, errors.WithMessage(err, "failed to get question")
 }
