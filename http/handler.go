@@ -131,6 +131,15 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
+	if r.Header.Get("Content-type") != "application/json" {
+		msg := "invalid Content-type"
+		w.WriteHeader(http.StatusBadRequest)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
 	var reqBody AddQuestionsRequest
 	err = json.NewDecoder(r.Body).Decode(&reqBody)
 	if err != nil {
