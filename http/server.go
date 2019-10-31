@@ -10,15 +10,22 @@ type Server struct {
 	db *db.Conn
 }
 
+func setHeader(h httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		h(w, r, ps)
+	}
+}
+
 func NewServer(db *db.Conn) *Server {
 	return &Server{db}
 }
 
 func (s *Server) Routes() *httprouter.Router {
 	router := httprouter.New()
-	router.GET("/questions", s.getQuestions)
-	router.GET("/questions/:uid", s.getQA)
-	router.POST("/questions", s.addQuestion)
+	router.GET("/questions", setHeader(s.getQuestions))
+	router.GET("/questions/:uid", setHeader(s.getQA))
+	router.POST("/questions", setHeader(s.addQuestion))
 
 	return router
 }
