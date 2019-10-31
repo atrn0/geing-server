@@ -72,9 +72,10 @@ func (db *Conn) GetQuestions(page int) ([]Question, error) {
 	err := db.conn.Select(
 		&questions,
 		`
-			SELECT id, question, created_at 
-			FROM qandas WHERE id > ? * 10 
-			AND answer IS NOT NULL 
+			SELECT id, question, created_at
+			FROM qandas WHERE id > ? * 10
+			AND answer IS NOT NULL
+			ORDER BY id DESC
 			LIMIT 20
 		`,
 		page,
