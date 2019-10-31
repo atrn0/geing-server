@@ -17,6 +17,10 @@ type AddQuestionsResponse struct {
 	QuestionBody string `json:"question_body"`
 }
 
+type AddQuestionsRequest struct {
+	Body string `json:"body"`
+}
+
 // TODO: headerを共通化
 
 // 質問を20件取得
@@ -127,7 +131,18 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	questionBody := r.FormValue("body")
+	var reqBody AddQuestionsRequest
+	err = json.NewDecoder(r.Body).Decode(&reqBody)
+	if err != nil {
+		msg := "invalid request"
+		w.WriteHeader(http.StatusBadRequest)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
+	questionBody := reqBody.Body
 	if questionBody == "" {
 		msg := "question is required"
 		w.WriteHeader(http.StatusBadRequest)

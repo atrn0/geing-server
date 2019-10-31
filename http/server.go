@@ -12,7 +12,7 @@ type Server struct {
 
 func setHeader(h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Origin", "http://localhost:3000")
 		h(w, r, ps)
 	}
 }
