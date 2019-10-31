@@ -13,6 +13,10 @@ type ErrorResponse struct {
 	Msg string `json:"msg"`
 }
 
+type GetQuestionsResponse struct {
+	Questions []db.Question `json:"questions"`
+}
+
 type AddQuestionsResponse struct {
 	QuestionBody string `json:"question_body"`
 }
@@ -68,7 +72,7 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 		return
 	}
 
-	res, _ = json.Marshal(questions)
+	res, _ = json.Marshal(GetQuestionsResponse{questions})
 	_, _ = w.Write(res)
 	fmt.Println("res: ", string(res))
 }

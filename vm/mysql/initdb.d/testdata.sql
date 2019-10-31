@@ -1,1 +1,0 @@
-insert into qandas (question) values ('何歳ですか');

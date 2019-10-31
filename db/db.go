@@ -8,18 +8,17 @@ import (
 	"github.com/pkg/errors"
 )
 
-type Questions struct {
-	Id        int    `db:"id"`
-	Question  string `db:"question"`
-	CreatedAt string `db:"created_at"`
+type Question struct {
+	Id        int    `db:"id" json:"id"`
+	Body      string `db:"question" json:"body"`
+	CreatedAt string `db:"created_at" json:"created_at"`
 }
 
 type QAndA struct {
-	Id        int     `db:"id"`
-	Question  string  `db:"question"`
-	Answered  bool    `db:"answered"`
-	Answer    *string `db:"answer"`
-	CreatedAt string  `db:"created_at"`
+	Id        int     `db:"id" json:"id"`
+	Question  string  `db:"question" json:"question"`
+	Answer    *string `db:"answer" json:"answer"`
+	CreatedAt string  `db:"created_at" json:"created_at"`
 }
 
 type Conn struct {
@@ -68,11 +67,20 @@ func (db *Conn) GetQA(id int) (*QAndA, error) {
 }
 
 // 質問を20件取得
-func (db *Conn) GetQuestions(page int) (*[]Questions, error) {
-	var questions []Questions
-	err := db.conn.Select(&questions, "SELECT id, question, created_at FROM qandas WHERE id > ? * 10 LIMIT 20", page)
+func (db *Conn) GetQuestions(page int) ([]Question, error) {
+	var questions []Question
+	err := db.conn.Select(
+		&questions,
+		`
+			SELECT id, question, created_at 
+			FROM qandas WHERE id > ? * 10 
+			AND answer IS NOT NULL 
+			LIMIT 20
+		`,
+		page,
+	)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get question")
 	}
-	return &questions, nil
+	return questions, nil
 }
