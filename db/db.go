@@ -31,7 +31,7 @@ func NewDB() (*Conn, error) {
 	var err error
 	db, err := sqlx.Open(
 		"mysql",
-		"aratasato:hoge@tcp(127.0.0.1:3306)/geing",
+		"aratasato:hoge@tcp(mysql:3306)/geing",
 	)
 
 	return &Conn{db}, errors.Wrap(err, "failed to connect db")

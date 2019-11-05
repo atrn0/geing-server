@@ -16,3 +16,9 @@ services:
       MYSQL_DATABASE: geing
       MYSQL_USER: aratasato
       MYSQL_PASSWORD: hoge
+  server:
+    build:
+      context: ./
+      dockerfile: ./vm/server/Dockerfile
+    ports:
+      - "8080:9090"
