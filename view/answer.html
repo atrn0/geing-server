@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+    <title>回答する</title>
+</head>
+<body>
+<h1>{{.Id}}: {{.Question}}</h1>
+<form method="post">
+    <label>
+        <input hidden value="{{.Id}}" name="id"/>
+    </label>
+    <label>
+        <textarea name="body"></textarea>
+    </label>
+    <button type="submit">Submit</button>
+</form>
+</body>
