@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <head>
+    <meta charset="UTF-8">
     <title>回答する</title>
 </head>
 <body>
-<h1>{{.Id}}: {{.Question}}</h1>
+<p>質問: {{.Question}}</p>
+<p>答え: {{.Answer}}</p>
 <form method="post">
     <label>
         <input hidden value="{{.Id}}" name="id"/>

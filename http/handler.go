@@ -29,6 +29,7 @@ type AddQuestionsRequest struct {
 type GetAnswerViewRequest struct {
 	Id       int
 	Question string
+	Answer   *string
 }
 
 // TODO: headerを共通化
@@ -191,18 +192,52 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 }
 
 // 質問に回答する用のviewを返す
-func (s *Server) getAnswerForm(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	t, err := template.ParseFiles("view/answer.html")
+func (s *Server) getAnswerForm(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var res []byte
 
+	t, err := template.ParseFiles("view/answer.html")
 	if err != nil {
 		fmt.Println(err)
 		msg := "internal server error"
 		w.WriteHeader(http.StatusInternalServerError)
-		res, _ := json.Marshal(ErrorResponse{msg})
+		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
 		fmt.Println("res: ", string(res))
 		return
 	}
 
-	_ = t.Execute(w, GetAnswerViewRequest{1, "this is question"})
+	uidStr := p.ByName("uid")
+
+	// 数字かどうか
+	uid, err := strconv.Atoi(uidStr)
+	if err != nil {
+		fmt.Println(err)
+		msg := "question id should be integer"
+		w.WriteHeader(http.StatusBadRequest)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
+	qa, err := s.db.GetQA(uid)
+	if err == db.ErrContentNotFound {
+		w.WriteHeader(http.StatusNotFound)
+		res, _ = json.Marshal(ErrorResponse{"question not found"})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
+	if err != nil {
+		fmt.Println(err)
+		msg := "internal server error"
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
+	_ = t.Execute(w, GetAnswerViewRequest{qa.Id, qa.Question, qa.Answer})
 }
