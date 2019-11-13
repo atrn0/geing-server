@@ -97,3 +97,6 @@ fabric.properties
 # vm
 vm/mysql_data/
 vm/log/
+
+# .env
+.env
