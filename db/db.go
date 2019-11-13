@@ -87,13 +87,13 @@ func (db *Conn) GetQuestions(page int) ([]Question, error) {
 }
 
 // 回答を追加
-func (db *Conn) SaveAnswer(body string) error {
+func (db *Conn) SaveAnswer(body string, id int) error {
 	fmt.Println("Save answer: " + body)
 	tx, err := db.conn.Beginx()
 	if err != nil {
 		return errors.Wrap(err, "failed to connect db")
 	}
-	_, err = tx.Exec("INSERT INTO qandas (answer) VALUES (?)", body)
+	_, err = tx.Exec("UPDATE `qandas` t SET t.`answer` = ? WHERE t.`id` = ?", body, id)
 	if err != nil {
 		return errors.Wrap(err, "failed to add answer")
 	}
