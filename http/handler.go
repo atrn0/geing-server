@@ -77,12 +77,7 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 	}
 
 	if questions == nil {
-		msg := "questions not found"
-		w.WriteHeader(http.StatusNotFound)
-		res, _ = json.Marshal(ErrorResponse{msg})
-		_, _ = w.Write(res)
-		fmt.Println("res: ", string(res))
-		return
+		w.WriteHeader(http.StatusNoContent)
 	}
 
 	res, _ = json.Marshal(GetQuestionsResponse{questions})
