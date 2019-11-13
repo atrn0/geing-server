@@ -10,7 +10,7 @@ services:
       - ./vm/mysql/initdb.d:/docker-entrypoint-initdb.d
       - ./vm/mysql/conf.d:/etc/mysql/conf.d
       - ./vm/log/mysql:/var/log/mysql
-      - ./vm/mysql_data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: hoge
       MYSQL_DATABASE: geing
@@ -22,3 +22,5 @@ services:
       dockerfile: ./vm/server/Dockerfile
     ports:
       - "8080:9090"
+volumes:
+  mysql-data:
