@@ -22,5 +22,7 @@ services:
       dockerfile: ./vm/server/Dockerfile
     ports:
       - "8080:9090"
+    volumes:
+      - .:/go/src/github.com/aratasato/geing-server
 volumes:
   mysql-data:
