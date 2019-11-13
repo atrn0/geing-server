@@ -19,7 +19,7 @@ jobs:
             ssh $SSH_USER@$SSH_HOST -p $SSH_PORT "
             cd geing-server
             && git pull
-            && docker-compose up -d --build
+            && docker-compose restart
             "
 workflows:
   version: 2
