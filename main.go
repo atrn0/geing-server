@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"github.com/aratasato/geing-server/db"
 	"github.com/aratasato/geing-server/http"
+	"github.com/joho/godotenv"
 	"log"
 )
 
 func main() {
 
 	fmt.Println("Starting geing server...")
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalln("Error loading .env file")
+	}
 
 	// init conn
 	conn, err := db.NewDB()
