@@ -26,8 +26,8 @@ func (s *Server) Routes() *httprouter.Router {
 	router.GET("/questions", setHeader(s.getQuestions))
 	router.GET("/questions/:uid", setHeader(s.getQA))
 	router.POST("/questions", setHeader(s.addQuestion))
-	router.GET("/answer/:uid", s.getAnswerForm)
-	router.POST("/answer/:uid", s.addAnswer)
+	router.GET("/admin/answer/:uid", s.getAnswerForm)
+	router.POST("/admin/answer/:uid", s.addAnswer)
 	return router
 }
 
