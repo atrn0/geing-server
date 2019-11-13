@@ -7,6 +7,8 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"html/template"
 	"net/http"
+	"net/url"
+	"os"
 	"strconv"
 )
 
@@ -300,6 +302,18 @@ func (s *Server) addAnswer(w http.ResponseWriter, r *http.Request, p httprouter.
 	if err != nil {
 		fmt.Println(err)
 		msg := "internal server error"
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
+	// フロントをビルド
+	_, err = http.PostForm(os.Getenv("NETLIFY_BUILD_HOOK_URL"), url.Values{})
+	if err != nil {
+		fmt.Println(err)
+		msg := "fail to build geing-front"
 		w.WriteHeader(http.StatusInternalServerError)
 		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
