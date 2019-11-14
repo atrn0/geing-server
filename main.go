@@ -35,7 +35,7 @@ func main() {
 		&adminUser,
 		&adminPass,
 		&netlifyBuildHookURL,
-		serverBaseUrl,
+		&serverBaseUrl,
 	)
 	fmt.Println("init server")
 	err = server.Start()
