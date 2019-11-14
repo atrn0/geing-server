@@ -16,6 +16,7 @@ services:
       MYSQL_DATABASE: geing
       MYSQL_USER: aratasato
       MYSQL_PASSWORD: hoge
+      TZ: Asia/Tokyo
   server:
     build:
       context: ./
