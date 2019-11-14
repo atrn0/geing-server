@@ -349,7 +349,7 @@ func (s *Server) admin(w http.ResponseWriter, r *http.Request, p httprouter.Para
 		return
 	}
 
-	err = t.Execute(w, GetAdminPageResponse{allQA, r.RequestURI})
+	err = t.Execute(w, GetAdminPageResponse{allQA, r.URL.Path})
 	if err != nil {
 		fmt.Println(err)
 	}
