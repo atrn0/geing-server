@@ -11,10 +11,23 @@ type Server struct {
 	adminUser           *string
 	adminPass           *string
 	netlifyBuildHookURL *string
+	serverBaseUrl       *string
 }
 
-func NewServer(db *db.Conn, adminUser, adminPass, netlifyBuildHookURL *string) *Server {
-	return &Server{db, adminUser, adminPass, netlifyBuildHookURL}
+func NewServer(
+	db *db.Conn,
+	adminUser,
+	adminPass,
+	netlifyBuildHookURL,
+	serverBaseUrl *string,
+) *Server {
+	return &Server{
+		db,
+		adminUser,
+		adminPass,
+		netlifyBuildHookURL,
+		serverBaseUrl,
+	}
 }
 
 func (s *Server) Start() error {

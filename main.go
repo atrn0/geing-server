@@ -20,6 +20,7 @@ func main() {
 	adminUser := os.Getenv("ADMIN_USERNAME")
 	adminPass := os.Getenv("ADMIN_PASSWD")
 	netlifyBuildHookURL := os.Getenv("NETLIFY_BUILD_HOOK_URL")
+	serverBaseUrl := os.Getenv("SERVER_BASE_URL")
 
 	// init conn
 	conn, err := db.NewDB()
@@ -34,6 +35,7 @@ func main() {
 		&adminUser,
 		&adminPass,
 		&netlifyBuildHookURL,
+		serverBaseUrl,
 	)
 	fmt.Println("init server")
 	err = server.Start()

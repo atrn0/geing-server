@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 type ErrorResponse struct {
@@ -349,7 +350,17 @@ func (s *Server) admin(w http.ResponseWriter, r *http.Request, p httprouter.Para
 		return
 	}
 
-	err = t.Execute(w, GetAdminPageResponse{allQA, r.URL.Path})
+	fmt.Println(s.serverBaseUrl)
+	err = t.Execute(
+		w,
+		GetAdminPageResponse{
+			allQA,
+			strings.Join(
+				[]string{*s.serverBaseUrl, r.RequestURI},
+				"",
+			),
+		},
+	)
 	if err != nil {
 		fmt.Println(err)
 	}
