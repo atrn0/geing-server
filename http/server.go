@@ -50,6 +50,7 @@ func (s *Server) Routes() *httprouter.Router {
 	router.GET("/questions", setHeader(s.getQuestions))
 	router.GET("/questions/:uid", setHeader(s.getQA))
 	router.POST("/questions", setHeader(s.addQuestion))
+	router.GET("/admin", basicAuth(s.admin, s.adminUser, s.adminPass))
 	router.GET("/admin/answer/:uid", basicAuth(s.getAnswerForm, s.adminUser, s.adminPass))
 	router.POST("/admin/answer/:uid", basicAuth(s.addAnswer, s.adminUser, s.adminPass))
 	return router

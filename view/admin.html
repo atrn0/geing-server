@@ -4,12 +4,13 @@
     <title>geing admin</title>
 </head>
 <body>
+{{$slug := .Slug}}
 <ul>
-    {{range .allQA}}
+    {{range .AllQA}}
     <li>
         <p>{{.CreatedAt}}</p>
-        <a href="answer/{{.Id}}">{{.Question}}</a>
-        <p>{{.Answer}}</p>
+        <p>質問: <a href="{{$slug}}/answer/{{.Id}}">{{.Question}}</a></p>
+        <p>答え: {{.Answer}}</p>
     </li>
     {{end}}
 </ul>

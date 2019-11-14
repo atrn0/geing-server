@@ -37,6 +37,11 @@ type AddAnswerRequest struct {
 	Body string `json:"body"`
 }
 
+type GetAdminPageResponse struct {
+	AllQA []*db.QAndA
+	Slug  string
+}
+
 // TODO: headerを共通化
 
 // 質問を20件取得
@@ -316,4 +321,36 @@ func (s *Server) addAnswer(w http.ResponseWriter, r *http.Request, p httprouter.
 	}
 
 	http.Redirect(w, r, r.RequestURI, 301)
+}
+
+// 質問リスト
+func (s *Server) admin(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	var res []byte
+	var err error
+	t, err := template.ParseFiles("view/admin.html")
+	if err != nil {
+		fmt.Println(err)
+		msg := "internal server error"
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
+	allQA, err := s.db.GetAllQAs()
+	if err != nil {
+		fmt.Println(err)
+		msg := "internal server error"
+		w.WriteHeader(http.StatusInternalServerError)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
+	err = t.Execute(w, GetAdminPageResponse{allQA, r.RequestURI})
+	if err != nil {
+		fmt.Println(err)
+	}
 }
