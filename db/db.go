@@ -73,7 +73,8 @@ func (db *Conn) GetQuestions(offset int) ([]Question, error) {
 		&questions,
 		`
 			SELECT id, question, created_at
-			FROM qandas WHERE id > ?
+			FROM qandas
+			WHERE id > ?
 			AND answer IS NOT NULL
 			ORDER BY id DESC
 			LIMIT 20
