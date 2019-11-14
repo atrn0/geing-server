@@ -4,6 +4,7 @@ import (
 	"github.com/aratasato/geing-server/db"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
+	"strings"
 )
 
 type Server struct {
@@ -40,7 +41,15 @@ func (s *Server) Start() error {
 
 func (s *Server) setHeader(h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		w.Header().Add("Access-Control-Allow-Origin", *s.corsAllowOrigin)
+		origin := r.Header.Get("Origin")
+		corsAllowOrigins := strings.Split(*s.corsAllowOrigin, ",")
+
+		for _, c := range corsAllowOrigins {
+			if c == origin {
+				w.Header().Add("Access-Control-Allow-Origin", c)
+			}
+		}
+
 		h(w, r, ps)
 	}
 }
