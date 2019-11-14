@@ -21,6 +21,7 @@ func main() {
 	adminPass := os.Getenv("ADMIN_PASSWD")
 	netlifyBuildHookURL := os.Getenv("NETLIFY_BUILD_HOOK_URL")
 	serverBaseUrl := os.Getenv("SERVER_BASE_URL")
+	corsAllowOrigin := os.Getenv("CORS_ALLOW_ORIGIN")
 
 	// init conn
 	conn, err := db.NewDB()
@@ -36,6 +37,7 @@ func main() {
 		&adminPass,
 		&netlifyBuildHookURL,
 		&serverBaseUrl,
+		&corsAllowOrigin,
 	)
 	fmt.Println("init server")
 	err = server.Start()

@@ -12,6 +12,7 @@ type Server struct {
 	adminPass           *string
 	netlifyBuildHookURL *string
 	serverBaseUrl       *string
+	corsAllowOrigin     *string
 }
 
 func NewServer(
@@ -19,7 +20,8 @@ func NewServer(
 	adminUser,
 	adminPass,
 	netlifyBuildHookURL,
-	serverBaseUrl *string,
+	serverBaseUrl,
+	corsAllowOrigin *string,
 ) *Server {
 	return &Server{
 		db,
@@ -27,6 +29,7 @@ func NewServer(
 		adminPass,
 		netlifyBuildHookURL,
 		serverBaseUrl,
+		corsAllowOrigin,
 	}
 }
 
@@ -35,9 +38,9 @@ func (s *Server) Start() error {
 	return http.ListenAndServe(":9090", router)
 }
 
-func setHeader(h httprouter.Handle) httprouter.Handle {
+func (s *Server) setHeader(h httprouter.Handle) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Origin", *s.corsAllowOrigin)
 		h(w, r, ps)
 	}
 }
@@ -60,9 +63,9 @@ func basicAuth(h httprouter.Handle, requiredUser, requiredPassword *string) http
 
 func (s *Server) Routes() *httprouter.Router {
 	router := httprouter.New()
-	router.GET("/questions", setHeader(s.getQuestions))
-	router.GET("/questions/:uid", setHeader(s.getQA))
-	router.POST("/questions", setHeader(s.addQuestion))
+	router.GET("/questions", s.setHeader(s.getQuestions))
+	router.GET("/questions/:uid", s.setHeader(s.getQA))
+	router.POST("/questions", s.setHeader(s.addQuestion))
 	router.GET("/admin", basicAuth(s.admin, s.adminUser, s.adminPass))
 	router.GET("/admin/answer/:uid", basicAuth(s.getAnswerForm, s.adminUser, s.adminPass))
 	router.POST("/admin/answer/:uid", basicAuth(s.addAnswer, s.adminUser, s.adminPass))
