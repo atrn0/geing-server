@@ -77,7 +77,7 @@ func (db *Conn) GetQuestions(offset int) ([]Question, error) {
 			WHERE id > ?
 			AND answer IS NOT NULL
 			ORDER BY id DESC
-			LIMIT 20
+			LIMIT 10
 		`,
 		offset,
 	)
