@@ -54,15 +54,15 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
-	pageStr := r.URL.Query().Get("page")
-	// pageの値がなかったら最初のページを返す
-	if pageStr == "" {
-		pageStr = "0"
+	offsetStr := r.URL.Query().Get("offset")
+	// offsetの値がなかったら最初のページを返す
+	if offsetStr == "" {
+		offsetStr = "0"
 	}
-	page, err := strconv.Atoi(pageStr)
+	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
 		fmt.Println(err)
-		msg := "page is invalid"
+		msg := "offset is invalid"
 		w.WriteHeader(http.StatusBadRequest)
 		res, _ = json.Marshal(ErrorResponse{msg})
 		_, _ = w.Write(res)
@@ -70,7 +70,7 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 		return
 	}
 
-	questions, err := s.db.GetQuestions(page)
+	questions, err := s.db.GetQuestions(offset)
 	if err != nil {
 		fmt.Println(err)
 		msg := "internal server error"
