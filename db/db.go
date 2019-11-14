@@ -100,3 +100,20 @@ func (db *Conn) SaveAnswer(body string, id int) error {
 	_ = tx.Commit()
 	return nil
 }
+
+// 質問と回答のリストを返す
+func (db *Conn) GetAllQAs() ([]*QAndA, error) {
+	var allQA []*QAndA
+	err := db.conn.Select(
+		&allQA,
+		`
+			SELECT id, question, answer, created_at
+			FROM qandas 
+			ORDER BY id DESC
+		`,
+	)
+	if err != nil {
+		return allQA, errors.Wrap(err, "failed to get all qa")
+	}
+	return allQA, nil
+}
