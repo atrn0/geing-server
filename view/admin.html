@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>geing admin</title>
+</head>
+<body>
+<ul>
+    {{range .allQA}}
+    <li>
+        <p>{{.CreatedAt}}</p>
+        <a href="answer/{{.Id}}">{{.Question}}</a>
+        <p>{{.Answer}}</p>
+    </li>
+    {{end}}
+</ul>
+</body>
