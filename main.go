@@ -17,6 +17,9 @@ func main() {
 	if err != nil {
 		log.Println("Error loading .env file")
 	}
+	adminUser := os.Getenv("ADMIN_USERNAME")
+	adminPass := os.Getenv("ADMIN_PASSWD")
+	netlifyBuildHookURL := os.Getenv("NETLIFY_BUILD_HOOK_URL")
 
 	// init conn
 	conn, err := db.NewDB()
@@ -28,8 +31,9 @@ func main() {
 	// init and start server
 	server := http.NewServer(
 		conn,
-		os.Getenv("ADMIN_USERNAME"),
-		os.Getenv("ADMIN_PASSWD"),
+		&adminUser,
+		&adminPass,
+		&netlifyBuildHookURL,
 	)
 	fmt.Println("init server")
 	err = server.Start()

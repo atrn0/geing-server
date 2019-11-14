@@ -7,13 +7,14 @@ import (
 )
 
 type Server struct {
-	db        *db.Conn
-	adminUser string
-	adminPass string
+	db                  *db.Conn
+	adminUser           *string
+	adminPass           *string
+	netlifyBuildHookURL *string
 }
 
-func NewServer(db *db.Conn, adminUser, adminPass string) *Server {
-	return &Server{db, adminUser, adminPass}
+func NewServer(db *db.Conn, adminUser, adminPass, netlifyBuildHookURL *string) *Server {
+	return &Server{db, adminUser, adminPass, netlifyBuildHookURL}
 }
 
 func (s *Server) Start() error {
@@ -28,12 +29,12 @@ func setHeader(h httprouter.Handle) httprouter.Handle {
 	}
 }
 
-func basicAuth(h httprouter.Handle, requiredUser, requiredPassword string) httprouter.Handle {
+func basicAuth(h httprouter.Handle, requiredUser, requiredPassword *string) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		// Get the Basic Authentication credentials
 		user, password, hasAuth := r.BasicAuth()
 
-		if hasAuth && user == requiredUser && password == requiredPassword {
+		if hasAuth && user == *requiredUser && password == *requiredPassword {
 			// Delegate request to the given handle
 			h(w, r, ps)
 		} else {
