@@ -67,7 +67,7 @@ func (db *Conn) GetQA(id int) (*QAndA, error) {
 }
 
 // 質問を20件取得
-func (db *Conn) GetQuestions(offset int) ([]Question, error) {
+func (db *Conn) GetQuestions(offset, limit int) ([]Question, error) {
 	var questions []Question
 	err := db.conn.Select(
 		&questions,
@@ -77,9 +77,10 @@ func (db *Conn) GetQuestions(offset int) ([]Question, error) {
 			WHERE id < ?
 			AND answer IS NOT NULL
 			ORDER BY id DESC
-			LIMIT 10
+			LIMIT ?
 		`,
 		offset,
+		limit,
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get question")

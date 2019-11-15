@@ -54,10 +54,26 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
+	limitStr := r.URL.Query().Get("limit")
+	// デフォルトは10件
+	if limitStr == "" {
+		limitStr = "10"
+	}
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		fmt.Println(err)
+		msg := "limit is invalid"
+		w.WriteHeader(http.StatusBadRequest)
+		res, _ = json.Marshal(ErrorResponse{msg})
+		_, _ = w.Write(res)
+		fmt.Println("res: ", string(res))
+		return
+	}
+
 	offsetStr := r.URL.Query().Get("offset")
 	// offsetの値がなかったら最初のページを返す
 	if offsetStr == "" {
-		offsetStr = "0"
+		offsetStr = "10000000"
 	}
 	offset, err := strconv.Atoi(offsetStr)
 	if err != nil {
@@ -70,7 +86,7 @@ func (s *Server) getQuestions(w http.ResponseWriter, r *http.Request, _ httprout
 		return
 	}
 
-	questions, err := s.db.GetQuestions(offset)
+	questions, err := s.db.GetQuestions(offset, limit)
 	if err != nil {
 		fmt.Println(err)
 		msg := "internal server error"
