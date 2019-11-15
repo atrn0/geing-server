@@ -324,7 +324,7 @@ func (s *Server) addAnswer(w http.ResponseWriter, r *http.Request, p httprouter.
 	http.Redirect(w, r, r.RequestURI, 301)
 }
 
-// 質問リスト
+// admin画面
 func (s *Server) admin(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var res []byte
 	var err error
