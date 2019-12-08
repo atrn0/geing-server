@@ -30,5 +30,11 @@ services:
       LETSENCRYPT_HOST: api.geing.ataran.me
       LETSENCRYPT_EMAIL: densiarata2@gmail.com
       LETSENCRYPT_TEST: "false"
+
+networks:
+  default:
+    external:
+      name: shared
+
 volumes:
   mysql-data:
