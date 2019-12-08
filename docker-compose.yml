@@ -25,5 +25,10 @@ services:
       - "8080:9090"
     volumes:
       - .:/go/src/github.com/aratasato/geing-server
+    environment:
+      VIRTUAL_HOST: api.geing.ataran.me
+      LETSENCRYPT_HOST: api.geing.ataran.me
+      LETSENCRYPT_EMAIL: densiarata2@gmail.com
+      LETSENCRYPT_TEST: "false"
 volumes:
   mysql-data:
