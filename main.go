@@ -22,6 +22,7 @@ func main() {
 	netlifyBuildHookURL := os.Getenv("NETLIFY_BUILD_HOOK_URL")
 	serverBaseUrl := os.Getenv("SERVER_BASE_URL")
 	corsAllowOrigin := os.Getenv("CORS_ALLOW_ORIGIN")
+	iftttWebHookKey := os.Getenv("IFTTT_WEBHOOK_KEY")
 
 	// init conn
 	conn, err := db.NewDB()
@@ -38,6 +39,7 @@ func main() {
 		&netlifyBuildHookURL,
 		&serverBaseUrl,
 		&corsAllowOrigin,
+		&iftttWebHookKey,
 	)
 	fmt.Println("init server")
 	err = server.Start()

@@ -14,6 +14,7 @@ type Server struct {
 	netlifyBuildHookURL *string
 	serverBaseUrl       *string
 	corsAllowOrigin     *string
+	iftttWebHookKey     *string
 }
 
 func NewServer(
@@ -22,7 +23,8 @@ func NewServer(
 	adminPass,
 	netlifyBuildHookURL,
 	serverBaseUrl,
-	corsAllowOrigin *string,
+	corsAllowOrigin,
+	iftttWebHookKey *string,
 ) *Server {
 	return &Server{
 		db,
@@ -31,6 +33,7 @@ func NewServer(
 		netlifyBuildHookURL,
 		serverBaseUrl,
 		corsAllowOrigin,
+		iftttWebHookKey,
 	}
 }
 

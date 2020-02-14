@@ -1,6 +1,7 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/aratasato/geing-server/db"
@@ -41,6 +42,10 @@ type AddAnswerRequest struct {
 type GetAdminPageResponse struct {
 	AllQA []*db.QAndA
 	Slug  string
+}
+
+type IFTTTNotifyRequest struct {
+	value1 string
 }
 
 // TODO: headerを共通化
@@ -207,6 +212,14 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 
 	newQuestion := AddQuestionsResponse{questionBody}
 	res, _ = json.Marshal(newQuestion)
+
+	// IFTTTで通知
+	data, _ := json.Marshal(IFTTTNotifyRequest{value1: questionBody})
+	_, _ = http.NewRequest(
+		"POST",
+		fmt.Sprintf("https://maker.ifttt.com/trigger/question_received/with/key/%s", s.iftttWebHookKey),
+		bytes.NewReader(data),
+	)
 
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
