@@ -215,11 +215,13 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 
 	// IFTTTで通知
 	data, _ := json.Marshal(IFTTTNotifyRequest{value1: questionBody})
-	_, _ = http.NewRequest(
+	req, _ := http.NewRequest(
 		"POST",
 		fmt.Sprintf("https://maker.ifttt.com/trigger/question_received/with/key/%s", s.iftttWebHookKey),
 		bytes.NewReader(data),
 	)
+	req.Header.Set("Content-Type", "application/json")
+	_, _ = http.DefaultClient.Do(req)
 
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
