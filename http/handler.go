@@ -44,10 +44,6 @@ type GetAdminPageResponse struct {
 	Slug  string
 }
 
-type IFTTTNotifyRequest struct {
-	value1 string
-}
-
 // TODO: headerを共通化
 
 // 質問を20件取得
@@ -214,14 +210,18 @@ func (s *Server) addQuestion(w http.ResponseWriter, r *http.Request, _ httproute
 	res, _ = json.Marshal(newQuestion)
 
 	// IFTTTで通知
-	data, _ := json.Marshal(IFTTTNotifyRequest{value1: questionBody})
 	req, _ := http.NewRequest(
 		"POST",
-		fmt.Sprintf("https://maker.ifttt.com/trigger/question_received/with/key/%s", s.iftttWebHookKey),
-		bytes.NewReader(data),
+		fmt.Sprintf("https://maker.ifttt.com/trigger/question_received/with/key/%s", *s.iftttWebHookKey),
+		bytes.NewBuffer([]byte(fmt.Sprintf(`{"value1": "%s"}`, questionBody))),
 	)
 	req.Header.Set("Content-Type", "application/json")
-	_, _ = http.DefaultClient.Do(req)
+	iftttRes, err := http.DefaultClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer iftttRes.Body.Close()
+	fmt.Println("IFTTT res: ", iftttRes)
 
 	w.WriteHeader(http.StatusCreated)
 	_, _ = w.Write(res)
