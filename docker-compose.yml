@@ -5,7 +5,7 @@ services:
     image: mysql:5.7
     restart: always
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - ./vm/mysql/initdb.d:/docker-entrypoint-initdb.d
       - ./vm/mysql/conf.d:/etc/mysql/conf.d
@@ -22,7 +22,7 @@ services:
       context: ./
       dockerfile: ./vm/server/Dockerfile
     ports:
-      - "8080:9090"
+      - "127.0.0.1:8080:9090"
     volumes:
       - .:/go/src/github.com/aratasato/geing-server
     environment:
